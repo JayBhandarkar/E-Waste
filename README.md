@@ -22,22 +22,42 @@ A modern, responsive, and eco-friendly frontend for E-Waste Loop - A Traceable, 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/
-│   ├── Navbar.js          # Navigation component
-│   └── Footer.js          # Footer component
-├── pages/
-│   ├── Home.js            # Landing page with hero, stats, and CTA
-│   ├── About.js           # Problem statement, mission, and vision
-│   ├── HowItWorks.js      # Step-by-step workflows for all stakeholders
-│   ├── Features.js        # Platform features and capabilities
-│   ├── Rewards.js         # Gamification, leaderboard, and impact tracking
-│   ├── Partnerships.js    # Corporate partnerships and benefits
-│   ├── Blog.js            # Learning hub with articles and updates
-│   └── Contact.js         # Contact form and support information
-├── App.js                 # Main app component with routing
-├── index.js              # Entry point
-└── index.css             # Global styles and TailwindCSS imports
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── Navbar.js          # Navigation component
+│   │   ├── Footer.js          # Footer component
+│   │   ├── ProtectedRoute.js  # Authentication wrapper
+│   │   └── Sidebar.js         # Dashboard sidebar
+│   ├── pages/
+│   │   ├── Home.js            # Landing page with hero, stats, and CTA
+│   │   ├── About.js           # Problem statement, mission, and vision
+│   │   ├── HowItWorks.js      # Step-by-step workflows for all stakeholders
+│   │   ├── Features.js        # Platform features and capabilities
+│   │   ├── Rewards.js         # Gamification, leaderboard, and impact tracking
+│   │   ├── Partnerships.js    # Corporate partnerships and benefits
+│   │   ├── Blog.js            # Learning hub with articles and updates
+│   │   ├── Contact.js         # Contact form and support information
+│   │   ├── Login.js           # User authentication
+│   │   ├── Signup.js          # User registration
+│   │   ├── Dashboard.js       # Device submission and tracking
+│   │   ├── Profile.js         # User profile management
+│   │   ├── ImpactDashboard.js # Environmental impact tracking
+│   │   ├── RewardsWallet.js   # Rewards and points management
+│   │   └── CompanyResale.js   # Corporate resale features
+│   ├── App.js                 # Main app component with routing
+│   ├── index.js              # Entry point
+│   └── index.css             # Global styles and TailwindCSS imports
+├── public/
+│   └── index.html            # HTML template
+├── package.json              # Frontend dependencies
+├── tailwind.config.js        # TailwindCSS configuration
+└── postcss.config.js         # PostCSS configuration
+
+server/
+├── server.js                 # Express server with MongoDB
+├── package.json              # Backend dependencies
+└── .env                      # Environment variables
 ```
 
 ## 🎨 Design System
@@ -61,20 +81,47 @@ src/
 
 ## 🛠️ Setup Instructions
 
-1. **Install Dependencies**
+### Frontend Setup
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install Dependencies**
    ```bash
    npm install
    ```
 
-2. **Start Development Server**
+3. **Start Development Server**
    ```bash
    npm start
    ```
 
-3. **Build for Production**
+4. **Build for Production**
    ```bash
    npm run build
    ```
+
+### Backend Setup
+1. **Navigate to server directory**
+   ```bash
+   cd server
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start Server**
+   ```bash
+   npm start
+   ```
+
+### Full Application
+- Frontend runs on: `http://localhost:3000`
+- Backend API runs on: `http://localhost:5000`
+- MongoDB connection: `mongodb://localhost:27017/E-waste`
 
 ## 📱 Pages Overview
 
