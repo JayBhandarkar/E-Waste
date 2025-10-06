@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, QrCode, Truck, Award, Recycle, Leaf, Users, TrendingUp } from 'lucide-react';
+import { ArrowRight, QrCode, Award, Recycle, Leaf, Users, TrendingUp, MapPin, Smartphone, ShoppingCart } from 'lucide-react';
 
 const Home = () => {
   const stats = [
@@ -12,21 +12,33 @@ const Home = () => {
 
   const steps = [
     {
-      icon: QrCode,
-      title: 'Scan QR Code',
-      description: 'Generate or scan QR codes on your electronic devices for instant tracking',
+      icon: MapPin,
+      title: 'Find E-Waste Bin',
+      description: 'Open the app and locate nearby e-waste bins on the interactive map',
       color: 'bg-blue-500'
     },
     {
-      icon: Truck,
-      title: 'Collect & Transport',
-      description: 'Certified collectors pick up your e-waste and update the tracking system',
+      icon: QrCode,
+      title: 'Scan QR Code',
+      description: 'Scan the unique QR code on the bin to identify and verify the location',
+      color: 'bg-indigo-500'
+    },
+    {
+      icon: Smartphone,
+      title: 'Fill E-Waste Info',
+      description: 'Enter device type, quantity, and upload optional photos through the form',
+      color: 'bg-purple-500'
+    },
+    {
+      icon: ShoppingCart,
+      title: 'Marketplace Listing',
+      description: 'Your e-waste appears on the marketplace for recycling companies to purchase',
       color: 'bg-orange-500'
     },
     {
       icon: Award,
-      title: 'Recycle & Certify',
-      description: 'Receive certificates and rewards for your contribution to sustainable recycling',
+      title: 'Earn Rewards',
+      description: 'Receive cashback, vouchers, or reward points when recycling is completed',
       color: 'bg-primary-500'
     }
   ];
@@ -105,21 +117,19 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
             <p className="text-xl text-gray-600">Simple steps to responsible e-waste recycling</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {steps.map((step, index) => (
               <div key={index} className="relative">
-                <div className="card text-center animate-slide-up">
-                  <div className={`${step.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6`}>
+                <div className="bg-white rounded-xl shadow-lg p-6 text-center animate-slide-up hover:shadow-xl transition-shadow">
+                  <div className={`${step.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4`}>
                     <step.icon className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                    <ArrowRight className="h-6 w-6 text-gray-400" />
+                  <div className="absolute -top-2 -left-2 bg-primary-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
+                    {index + 1}
                   </div>
-                )}
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">{step.title}</h3>
+                  <p className="text-gray-600 text-sm">{step.description}</p>
+                </div>
               </div>
             ))}
           </div>

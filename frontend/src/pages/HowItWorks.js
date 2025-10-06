@@ -1,102 +1,91 @@
-import React from 'react';
-import { QrCode, Smartphone, Truck, MapPin, Award, CheckCircle, Users, Recycle } from 'lucide-react';
+import React, { useState } from 'react';
+import { QrCode, Smartphone, Truck, MapPin, Award, CheckCircle, ShoppingCart, Home } from 'lucide-react';
 
 const HowItWorks = () => {
-  const userSteps = [
-    {
-      icon: Smartphone,
-      title: 'Register Device',
-      description: 'Create an account and register your electronic device on our platform',
-      details: ['Sign up with email or phone', 'Add device details', 'Get unique device ID']
-    },
-    {
-      icon: QrCode,
-      title: 'Generate QR Code',
-      description: 'Generate a unique QR code for your device that contains all tracking information',
-      details: ['Instant QR generation', 'Secure device linking', 'Printable labels available']
-    },
-    {
-      icon: Truck,
-      title: 'Schedule Pickup',
-      description: 'Schedule a convenient pickup time with certified e-waste collectors',
-      details: ['Choose pickup time', 'Certified collectors', 'Free collection service']
-    },
-    {
-      icon: Award,
-      title: 'Earn Rewards',
-      description: 'Receive points, certificates, and track your environmental impact',
-      details: ['Instant reward points', 'Digital certificates', 'Impact tracking']
-    }
-  ];
+  const [activeTab, setActiveTab] = useState('current');
 
-  const collectorSteps = [
+  const currentSteps = [
     {
       icon: MapPin,
-      title: 'Receive Pickup Request',
-      description: 'Get notified of pickup requests in your service area',
-      details: ['Real-time notifications', 'Route optimization', 'Customer details']
+      title: 'Find Nearby E-Waste Bin',
+      description: 'Open the web app and see a map with nearby e-waste bins. Go to the nearest bin.',
+      details: ['Interactive map view', 'GPS location of bins', 'Distance and directions']
     },
     {
       icon: QrCode,
-      title: 'Scan & Collect',
-      description: 'Scan QR codes to update device status and collect e-waste',
-      details: ['Mobile app scanning', 'Status updates', 'Inventory tracking']
+      title: 'Scan the QR Code',
+      description: 'Each bin has a unique QR code. Scan it using the app to identify that bin.',
+      details: ['Unique bin identification', 'Instant QR scanning', 'Bin verification']
     },
     {
-      icon: Truck,
-      title: 'Transport to Facility',
-      description: 'Safely transport collected e-waste to certified recycling facilities',
-      details: ['Secure transportation', 'Chain of custody', 'Real-time tracking']
+      icon: Smartphone,
+      title: 'Fill E-Waste Info',
+      description: 'A form opens where you enter type of e-waste, quantity/weight, and optional photo.',
+      details: ['Device type selection', 'Weight/quantity input', 'Photo upload option']
     },
     {
-      icon: CheckCircle,
-      title: 'Confirm Delivery',
-      description: 'Confirm delivery at recycling facility and update system',
-      details: ['Delivery confirmation', 'Weight verification', 'System updates']
-    }
-  ];
-
-  const recyclerSteps = [
-    {
-      icon: CheckCircle,
-      title: 'Receive E-Waste',
-      description: 'Accept e-waste from collectors and verify QR codes',
-      details: ['Intake verification', 'Quality assessment', 'Documentation']
-    },
-    {
-      icon: Recycle,
-      title: 'Process Materials',
-      description: 'Dismantle and process devices to recover valuable materials',
-      details: ['Safe dismantling', 'Material separation', 'Quality control']
+      icon: ShoppingCart,
+      title: 'Marketplace',
+      description: 'Your e-waste details appear on the Marketplace where recycling companies can purchase.',
+      details: ['Automatic listing', 'Company visibility', 'Purchase requests']
     },
     {
       icon: Award,
-      title: 'Issue Certificates',
-      description: 'Generate certificates of proper recycling and material recovery',
-      details: ['Digital certificates', 'Material reports', 'Compliance documentation']
-    },
-    {
-      icon: Users,
-      title: 'Update Stakeholders',
-      description: 'Notify all stakeholders about successful recycling completion',
-      details: ['User notifications', 'Impact updates', 'Reward distribution']
+      title: 'Recycle & Reward',
+      description: 'Company collects and recycles the e-waste. You receive cashback, vouchers, or reward points.',
+      details: ['Cashback rewards', 'Voucher system', 'Points accumulation']
     }
   ];
 
-  const WorkflowSection = ({ title, steps, bgColor }) => (
-    <section className={`${bgColor} section-padding`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{title}</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+  const futureSteps = [
+    {
+      icon: Home,
+      title: 'Scan from Anywhere',
+      description: 'Scan the QR code from home or anywhere without going to a bin.',
+      details: ['Home pickup service', 'No travel required', 'Convenient scheduling']
+    },
+    {
+      icon: Truck,
+      title: 'Pickup Request',
+      description: 'The app sends a pickup request to nearby certified collectors automatically.',
+      details: ['Automated requests', 'Certified collectors', 'Service area matching']
+    },
+    {
+      icon: MapPin,
+      title: 'Direct Collection',
+      description: 'Collector comes to pick up the e-waste directly from your location.',
+      details: ['Door-to-door service', 'Scheduled pickup', 'Professional handling']
+    },
+    {
+      icon: CheckCircle,
+      title: 'Live Tracking',
+      description: 'Track pickup, transport, and recycling status in real-time through the app.',
+      details: ['Real-time updates', 'Status notifications', 'Complete transparency']
+    },
+    {
+      icon: Award,
+      title: 'Automatic Rewards',
+      description: 'Once recycling is complete, you automatically receive rewards.',
+      details: ['Instant rewards', 'Automated processing', 'Impact tracking']
+    }
+  ];
+
+
+
+  const WorkflowSection = ({ steps, bgColor }) => (
+    <section className={`${bgColor} py-16`}>
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {steps.map((step, index) => (
-            <div key={index} className="card">
-              <div className="bg-primary-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <step.icon className="h-8 w-8 text-primary-600" />
+            <div key={index} className="bg-white rounded-xl shadow-lg p-8 relative hover:shadow-xl transition-shadow">
+              <div className="bg-primary-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <step.icon className="h-10 w-10 text-primary-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{step.title}</h3>
-              <p className="text-gray-600 text-center mb-4">{step.description}</p>
+              <div className="absolute -top-3 -left-3 bg-primary-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-lg">
+                {index + 1}
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">{step.title}</h3>
+              <p className="text-gray-600 text-center mb-6 text-base leading-relaxed">{step.description}</p>
               <ul className="space-y-2">
                 {step.details.map((detail, idx) => (
                   <li key={idx} className="flex items-center text-sm text-gray-500">
@@ -115,88 +104,91 @@ const HowItWorks = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-eco-50 section-padding">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <section className="bg-gradient-to-br from-primary-50 to-eco-50 py-12">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             How E-Waste Loop Works
           </h1>
-          <p className="text-xl text-gray-600 leading-relaxed">
-            A comprehensive three-stakeholder system connecting users, collectors, 
-            and recyclers for transparent e-waste management.
+          <p className="text-lg text-gray-600 leading-normal mb-6">
+            Simple steps to recycle your e-waste responsibly and earn rewards.
           </p>
+          
+          {/* Tab Navigation */}
+          <div className="flex justify-center">
+            <div className="bg-white rounded-lg p-1 shadow-md">
+              <button
+                onClick={() => setActiveTab('current')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'current'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-gray-600 hover:text-primary-500'
+                }`}
+              >
+                Current Version
+              </button>
+              <button
+                onClick={() => setActiveTab('future')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'future'
+                    ? 'bg-primary-500 text-white'
+                    : 'text-gray-600 hover:text-primary-500'
+                }`}
+              >
+                Future Plan
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Overview */}
-      <section className="bg-white section-padding">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Complete Ecosystem</h2>
-            <p className="text-xl text-gray-600">Three interconnected workflows for seamless e-waste management</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card text-center">
-              <Users className="h-16 w-16 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Users</h3>
-              <p className="text-gray-600">Register devices, generate QR codes, schedule pickups, and earn rewards</p>
+      {/* Current Version */}
+      {activeTab === 'current' && (
+        <>
+          <section className="bg-white py-12">
+            <div className="max-w-7xl mx-auto text-center px-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Current Version</h2>
+              <p className="text-xl text-gray-600">Visit nearby e-waste bins to recycle your devices</p>
             </div>
-            <div className="card text-center">
-              <Truck className="h-16 w-16 text-orange-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Collectors</h3>
-              <p className="text-gray-600">Receive requests, collect e-waste, and transport to recycling facilities</p>
+          </section>
+          <WorkflowSection steps={currentSteps} bgColor="bg-blue-50" />
+        </>
+      )}
+
+      {/* Future Plan */}
+      {activeTab === 'future' && (
+        <>
+          <section className="bg-white py-12">
+            <div className="max-w-7xl mx-auto text-center px-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Future Plan - Next Phase</h2>
+              <p className="text-xl text-gray-600">Home pickup service with live tracking and automatic rewards</p>
             </div>
-            <div className="card text-center">
-              <Recycle className="h-16 w-16 text-primary-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Recyclers</h3>
-              <p className="text-gray-600">Process materials, issue certificates, and complete the recycling loop</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* User Workflow */}
-      <WorkflowSection 
-        title="User Workflow" 
-        steps={userSteps} 
-        bgColor="bg-blue-50" 
-      />
-
-      {/* Collector Workflow */}
-      <WorkflowSection 
-        title="Collector Workflow" 
-        steps={collectorSteps} 
-        bgColor="bg-orange-50" 
-      />
-
-      {/* Recycler Workflow */}
-      <WorkflowSection 
-        title="Recycler Workflow" 
-        steps={recyclerSteps} 
-        bgColor="bg-primary-50" 
-      />
+          </section>
+          <WorkflowSection steps={futureSteps} bgColor="bg-green-50" />
+        </>
+      )}
 
       {/* Technology Features */}
-      <section className="bg-gray-900 text-white section-padding">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Technology Features</h2>
-            <p className="text-xl text-gray-300">Advanced features that make our system reliable and efficient</p>
+      <section className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Technology Features</h2>
+            <p className="text-lg text-gray-300">Advanced features that make our system reliable and efficient</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-gray-800 rounded-xl p-6">
-              <QrCode className="h-12 w-12 text-primary-400 mb-4" />
-              <h3 className="text-xl font-bold mb-3">QR Code Tracking</h3>
-              <p className="text-gray-300">Unique QR codes for each device enabling complete traceability throughout the recycling process.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-gray-800 rounded-xl p-5">
+              <QrCode className="h-10 w-10 text-primary-400 mb-3" />
+              <h3 className="text-lg font-bold mb-2">QR Code Tracking</h3>
+              <p className="text-gray-300 text-sm leading-relaxed">Unique QR codes for each device enabling complete traceability throughout the recycling process.</p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-6">
-              <MapPin className="h-12 w-12 text-primary-400 mb-4" />
-              <h3 className="text-xl font-bold mb-3">Real-time Location</h3>
-              <p className="text-gray-300">GPS tracking of e-waste from pickup to final recycling destination with live updates.</p>
+            <div className="bg-gray-800 rounded-xl p-5">
+              <MapPin className="h-10 w-10 text-primary-400 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Real-time Location</h3>
+              <p className="text-gray-300 text-sm leading-relaxed">GPS tracking of e-waste from pickup to final recycling destination with live updates.</p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-6">
-              <Award className="h-12 w-12 text-primary-400 mb-4" />
-              <h3 className="text-xl font-bold mb-3">Digital Certificates</h3>
-              <p className="text-gray-300">Blockchain-verified certificates proving proper recycling and environmental compliance.</p>
+            <div className="bg-gray-800 rounded-xl p-5">
+              <Award className="h-10 w-10 text-primary-400 mb-3" />
+              <h3 className="text-lg font-bold mb-2">Digital Certificates</h3>
+              <p className="text-gray-300 text-sm leading-relaxed">Blockchain-verified certificates proving proper recycling and environmental compliance.</p>
             </div>
           </div>
         </div>
