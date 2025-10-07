@@ -17,7 +17,13 @@ mongoose.connect('mongodb://localhost:27017/E-waste', {
   useUnifiedTopology: true,
 });
 
-// User Schema
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('Connected to MongoDB database: E-waste');
+});
+
+// User Schema (Individual Users Collection)
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -29,7 +35,22 @@ const userSchema = new mongoose.Schema({
   totalDevicesRecycled: { type: Number, default: 0 },
   totalCO2Saved: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
-});
+}, { collection: 'users' });
+
+// Company Schema (Companies Collection)
+const companySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  phone: { type: String, default: '' },
+  address: { type: String, default: '' },
+  description: { type: String, default: '' },
+  totalCollected: { type: Number, default: 0 },
+  monthlyRevenue: { type: Number, default: 0 },
+  activePartners: { type: Number, default: 0 },
+  recyclingRate: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
+}, { collection: 'companies' });
 
 // Device Schema
 const deviceSchema = new mongoose.Schema({
@@ -57,11 +78,12 @@ const transactionSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
+const Company = mongoose.model('Company', companySchema);
 const Device = mongoose.model('Device', deviceSchema);
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
-// Register endpoint
-app.post('/api/register', async (req, res) => {
+// User Register endpoint
+app.post('/api/user/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
     
@@ -71,42 +93,102 @@ app.post('/api/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashedPassword });
+    const user = new User({ name, email, password: hashedPassword, userType: 'user' });
     await user.save();
 
-    const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
+    const token = jwt.sign({ userId: user._id, userType: 'user' }, 'your-secret-key', { expiresIn: '24h' });
     
     res.status(201).json({
       message: 'User created successfully',
       token,
-      user: { id: user._id, name: user.name, email: user.email }
+      user: { id: user._id, name: user.name, email: user.email, userType: 'user' }
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
-// Login endpoint
-app.post('/api/login', async (req, res) => {
+// Company Register endpoint
+app.post('/api/company/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    const existingCompany = await Company.findOne({ email });
+    if (existingCompany) {
+      return res.status(400).json({ message: 'Company already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const company = new Company({ name, email, password: hashedPassword, userType: 'company' });
+    await company.save();
+
+    const token = jwt.sign({ userId: company._id, userType: 'company' }, 'your-secret-key', { expiresIn: '24h' });
+    
+    res.status(201).json({
+      message: 'Company created successfully',
+      token,
+      user: { id: company._id, name: company.name, email: company.email, userType: 'company' }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Legacy register endpoint (for backward compatibility)
+app.post('/api/register', async (req, res) => {
+  try {
+    const { name, email, password, userType = 'user' } = req.body;
+    
+    if (userType === 'company') {
+      const existingCompany = await Company.findOne({ email });
+      if (existingCompany) {
+        return res.status(400).json({ message: 'Company already exists' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const company = new Company({ name, email, password: hashedPassword, userType: 'company' });
+      await company.save();
+      const token = jwt.sign({ userId: company._id, userType: 'company' }, 'your-secret-key', { expiresIn: '24h' });
+      res.status(201).json({
+        message: 'Company created successfully',
+        token,
+        user: { id: company._id, name: company.name, email: company.email, userType: 'company' }
+      });
+    } else {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({ name, email, password: hashedPassword, userType: 'user' });
+      await user.save();
+      const token = jwt.sign({ userId: user._id, userType: 'user' }, 'your-secret-key', { expiresIn: '24h' });
+      res.status(201).json({
+        message: 'User created successfully',
+        token,
+        user: { id: user._id, name: user.name, email: user.email, userType: 'user' }
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// User Login endpoint
+app.post('/api/user/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for email:', email);
     
     const user = await User.findOne({ email });
     if (!user) {
-      console.log('User not found for email:', email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    console.log('User found:', user.email);
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Password mismatch for user:', email);
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '24h' });
-    console.log('Login successful for user:', email);
+    const token = jwt.sign({ userId: user._id, userType: 'user' }, 'your-secret-key', { expiresIn: '24h' });
     
     res.json({
       message: 'Login successful',
@@ -120,11 +202,50 @@ app.post('/api/login', async (req, res) => {
         bio: user.bio,
         ecoPoints: user.ecoPoints,
         totalDevicesRecycled: user.totalDevicesRecycled,
-        totalCO2Saved: user.totalCO2Saved
+        totalCO2Saved: user.totalCO2Saved,
+        userType: 'user'
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Company Login endpoint
+app.post('/api/company/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    const company = await Company.findOne({ email });
+    if (!company) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const isMatch = await bcrypt.compare(password, company.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: company._id, userType: 'company' }, 'your-secret-key', { expiresIn: '24h' });
+    
+    res.json({
+      message: 'Login successful',
+      token,
+      user: { 
+        id: company._id, 
+        name: company.name, 
+        email: company.email, 
+        phone: company.phone, 
+        address: company.address, 
+        description: company.description,
+        totalCollected: company.totalCollected,
+        monthlyRevenue: company.monthlyRevenue,
+        activePartners: company.activePartners,
+        recyclingRate: company.recyclingRate,
+        userType: 'company'
+      }
+    });
+  } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
@@ -184,6 +305,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, 'your-secret-key');
     req.userId = decoded.userId;
+    req.userType = decoded.userType;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid token' });
@@ -273,7 +395,8 @@ app.post('/api/create-test-user', async (req, res) => {
     const testUser = new User({
       name: 'Test User',
       email: 'test@example.com',
-      password: hashedPassword
+      password: hashedPassword,
+      userType: 'user'
     });
     await testUser.save();
     res.json({ message: 'Test user created', email: 'test@example.com', password: '123456' });
@@ -286,8 +409,33 @@ app.post('/api/create-test-user', async (req, res) => {
   }
 });
 
+// Create test company endpoint
+app.post('/api/create-test-company', async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash('123456', 10);
+    const testCompany = new Company({
+      name: 'Test Company',
+      email: 'company@example.com',
+      password: hashedPassword,
+      userType: 'company',
+      totalCollected: 15420,
+      monthlyRevenue: 125000,
+      activePartners: 45,
+      recyclingRate: 94.5
+    });
+    await testCompany.save();
+    res.json({ message: 'Test company created', email: 'company@example.com', password: '123456' });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.json({ message: 'Test company already exists', email: 'company@example.com', password: '123456' });
+    } else {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('Connected to MongoDB database: E-waste');
+  console.log('Separate collections: users, companies');
 });

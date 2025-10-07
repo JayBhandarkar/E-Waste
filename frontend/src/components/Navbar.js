@@ -4,7 +4,16 @@ import { Menu, X, Recycle } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -13,13 +22,19 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <nav className={`sticky top-0 z-50 transition-all duration-300 ${
+      scrolled 
+        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' 
+        : 'bg-white shadow-lg'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <div className="flex items-center space-x-2">
-              <Recycle className="h-8 w-8 text-primary-600" />
-              <span className="font-bold text-xl text-gray-900">E-Waste Loop</span>
+            <div className="flex items-center space-x-2 group">
+              <div className="bg-gradient-to-br from-primary-600 to-eco-600 p-2 rounded-lg group-hover:scale-110 transition-transform">
+                <Recycle className="h-6 w-6 text-white" />
+              </div>
+              <span className="font-bold text-xl bg-gradient-to-r from-primary-600 to-eco-600 bg-clip-text text-transparent">E-Waste Loop</span>
             </div>
           </div>
 
