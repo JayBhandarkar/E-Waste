@@ -33,7 +33,7 @@ frontend/
 │   │   ├── Home.js            # Landing page with hero, stats, and CTA
 │   │   ├── About.js           # Problem statement, mission, and vision
 │   │   ├── HowItWorks.js      # Step-by-step workflows for all stakeholders
-│   │   ├── Features.js        # Platform features and capabilities
+│   │   ├── Featu[README.md](EWasteApp/README.md)res.js        # Platform features and capabilities
 │   │   ├── Rewards.js         # Gamification, leaderboard, and impact tracking
 │   │   ├── Partnerships.js    # Corporate partnerships and benefits
 │   │   ├── Blog.js            # Learning hub with articles and updates

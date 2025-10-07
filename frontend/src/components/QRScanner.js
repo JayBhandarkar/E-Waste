@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Camera, X } from 'lucide-react';
+import { Camera, X, Zap } from 'lucide-react';
+import jsQR from 'jsqr';
 
 const QRScanner = ({ onScan, onClose }) => {
   const videoRef = useRef(null);
@@ -51,13 +52,12 @@ const QRScanner = ({ onScan, onClose }) => {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
         
-        // Simple QR detection simulation (in real app, use jsQR library)
-        // For demo, we'll simulate QR detection after 3 seconds
-        setTimeout(() => {
-          const mockQRData = `EWASTE-${Date.now()}-DEVICE-SCAN`;
-          onScan(mockQRData);
-        }, 3000);
+        if (code) {
+          handleQRDetected(code.data);
+          return;
+        }
       }
       
       if (isScanning) {
@@ -66,6 +66,44 @@ const QRScanner = ({ onScan, onClose }) => {
     };
 
     scan();
+  };
+
+  const captureFrame = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    const video = videoRef.current;
+
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      
+      if (code) {
+        handleQRDetected(code.data);
+      } else {
+        setError('No QR code detected. Please try again.');
+        setTimeout(() => setError(''), 3000);
+      }
+    }
+  };
+
+  const handleQRDetected = (qrData) => {
+    stopCamera();
+    
+    // Check if QR data is a URL and redirect
+    if (qrData.startsWith('http://') || qrData.startsWith('https://')) {
+      const userConfirmed = window.confirm(`QR code contains a link: ${qrData}\n\nDo you want to open this link?`);
+      if (userConfirmed) {
+        window.open(qrData, '_blank');
+      }
+    }
+    
+    onScan(qrData);
   };
 
   return (
@@ -122,17 +160,26 @@ const QRScanner = ({ onScan, onClose }) => {
 
             <div className="text-center">
               <p className="text-sm text-gray-600 mb-4">
-                Point your camera at a QR code to scan
+                Point your camera at a QR code to scan automatically or click capture
               </p>
-              <button
-                onClick={() => {
-                  stopCamera();
-                  onClose();
-                }}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-              >
-                Cancel
-              </button>
+              <div className="flex space-x-3 justify-center">
+                <button
+                  onClick={captureFrame}
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 inline-flex items-center"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  Capture
+                </button>
+                <button
+                  onClick={() => {
+                    stopCamera();
+                    onClose();
+                  }}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         )}

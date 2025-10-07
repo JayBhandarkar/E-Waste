@@ -135,14 +135,34 @@ const Dashboard = () => {
 
   const handleQRScan = (qrData) => {
     setQrResult(qrData);
-    if (qrData.includes('SMARTPHONE')) {
+    
+    // Auto-fill form based on QR data patterns
+    if (qrData.includes('SMARTPHONE') || qrData.includes('smartphone')) {
       setFormData({
         ...formData,
         deviceType: 'Smartphone',
-        brand: 'Apple'
+        brand: qrData.includes('APPLE') || qrData.includes('apple') ? 'Apple' : formData.brand
+      });
+    } else if (qrData.includes('LAPTOP') || qrData.includes('laptop')) {
+      setFormData({
+        ...formData,
+        deviceType: 'Laptop'
+      });
+    } else if (qrData.includes('TABLET') || qrData.includes('tablet')) {
+      setFormData({
+        ...formData,
+        deviceType: 'Tablet'
       });
     }
+    
     setShowScanner(false);
+    
+    // Show success message
+    if (qrData.startsWith('http://') || qrData.startsWith('https://')) {
+      alert('QR code scanned successfully! Link has been opened in a new tab.');
+    } else {
+      alert('QR code scanned successfully!');
+    }
   };
 
   return (
